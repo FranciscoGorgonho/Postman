@@ -1,0 +1,626 @@
+{
+	"info": {
+		"_postman_id": "1ab1176c-163d-4846-b15f-62626d89a03a",
+		"name": "Student expert",
+		"description": "StartFragment\n\nLearn the skills to become a certified Postman Student Expert.\n\nEndFragment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25428510"
+	},
+	"item": [
+		{
+			"name": "1. Begin training - Requests",
+			"item": [
+				{
+					"name": "0. Start training",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{training_api}}/training",
+							"host": [
+								"{{training_api}}"
+							],
+							"path": [
+								"training"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1. Get matches",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{training_api}}/matches?status=played",
+							"host": [
+								"{{training_api}}"
+							],
+							"path": [
+								"matches"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "played"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Add match",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": " {\r\n     \"match\": \"Cup Final\",\r\n     \"when\": \"{{$randomDateFuture}}\",\r\n     \"against\": \"Academical\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{training_api}}/match",
+							"host": [
+								"{{training_api}}"
+							],
+							"path": [
+								"match"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Update score",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"points\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{training_api}}/match?match_id=poo9ynIsP",
+							"host": [
+								"{{training_api}}"
+							],
+							"path": [
+								"match"
+							],
+							"query": [
+								{
+									"key": "match_id",
+									"value": "poo9ynIsP"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove match",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{training_api}}/match/:match_id",
+							"host": [
+								"{{training_api}}"
+							],
+							"path": [
+								"match",
+								":match_id"
+							],
+							"variable": [
+								{
+									"key": "match_id",
+									"value": "poo9ynIsP"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Scripting and Collection Runs",
+			"item": [
+				{
+					"name": "Get all players",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" pm.test('Status code is 200', function () {\r",
+									"     \tpm.response.to.have.status(200);\r",
+									"\t});\r",
+									"\r",
+									"    var player_list=pm.response.json().data.players;\r",
+									"pm.environment.set('player_id', player_list[Math.floor(Math.random() * player_list.length)].id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{mock_url}}/players",
+							"host": [
+								"{{mock_url}}"
+							],
+							"path": [
+								"players"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get specific player",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"if(!pm.variables.get('player_id')) pm.variables.set('player_id', -1);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" pm.test('Status code is 200', function () {\r",
+									"     \tpm.response.to.have.status(200);\r",
+									"    \r",
+									"    });\r",
+									"\r",
+									"        if(pm.response.json().data.played<750) postman.setNextRequest('Get all players'); \r",
+									"        pm.environment.set('played', pm.response.json().data.played);\r",
+									"\t"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{mock_url}}/player?id={{player_id}}",
+							"host": [
+								"{{mock_url}}"
+							],
+							"path": [
+								"player"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "{{player_id}}"
+								}
+							]
+						},
+						"description": "Description here"
+					},
+					"response": []
+				},
+				{
+					"name": "Get stats",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" pm.test('Status code is 200', function () {\r",
+									"     \tpm.response.to.have.status(200);\r",
+									"\t});\r",
+									"\r",
+									"    pm.test('Stats include all fields', function () {\r",
+									"        var jsonData = pm.response.json().data;\r",
+									"        pm.expect(jsonData).to.have.all.keys('won', 'lost', 'drew');\r",
+									" });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{mock_url}}/stats",
+							"host": [
+								"{{mock_url}}"
+							],
+							"path": [
+								"stats"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Check Progress",
+			"item": [
+				{
+					"name": "Skill check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.test('Stats include all fields', function () {\r",
+									"    pm.environment.set(\"responseData\", jsonData.rand);\r",
+									"    console.log(jsonData.rand)\r",
+									"});\r",
+									"\r",
+									"\r",
+									"//var responseRand=pm.response.json();\r",
+									"//pm.collectionVariables.set('responseData', responseRand['rand']);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "NUIG",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "auth_key",
+									"type": "string"
+								},
+								{
+									"key": "in",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "response-value",
+								"value": "{{responseData}}",
+								"type": "text"
+							},
+							{
+								"key": "course",
+								"value": "{{myCourse}}",
+								"type": "text"
+							},
+							{
+								"warning": "This is a duplicate header and will be overridden by the auth_key header generated by Postman.",
+								"key": "auth_key",
+								"value": "loads",
+								"type": "text"
+							},
+							{
+								"key": "user-Id",
+								"value": "{{userId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Francisco Gorgonho\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "postman-skill-checker.glitch.me/skills?email={{email_key}}&course={{myCourse}}",
+							"host": [
+								"postman-skill-checker",
+								"glitch",
+								"me"
+							],
+							"path": [
+								"skills"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "{{email_key}}"
+								},
+								{
+									"key": "course",
+									"value": "{{myCourse}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test collection",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//info\r",
+									"pm.test(\"Once all of your tests are passing, save your collection, update the link via the Share flow, and submit it: bit.ly/student-expert-submission\", () =>{\r",
+									"    pm.expect(true).to.eql(true);\r",
+									"});\r",
+									"\r",
+									"//collection name is correct\r",
+									"let nameCorrect=false;\r",
+									"pm.test('Correct collection name', () => {\r",
+									"    let studIndex = pm.response.json().info.name.indexOf(\"Student expert\");\r",
+									"    let classIndex = pm.response.json().info.name.indexOf(\"Classroom\");\r",
+									"    nameCorrect = studIndex>-1 || classIndex>-1;\r",
+									"    pm.expect(nameCorrect).to.eql(true);\r",
+									"});\r",
+									"\r",
+									"//used auth\r",
+									"pm.test(\"Authorized requests\", () => {\r",
+									"    pm.expect(authObj).to.be.an(\"object\");\r",
+									"    pm.expect(authObj).to.have.property(\"apikey\"); \r",
+									"    console.log(authObj);\r",
+									"});\r",
+									"\r",
+									"//used all required methods\r",
+									"pm.test(\"Used GET, POST, PUT, DELETE methods\", () => {\r",
+									"    //first folder should have all methods in requests\r",
+									"    let methArr = requestArr.map(value => value.request.method); \r",
+									"    console.log(methArr);\r",
+									"    pm.expect(methArr).to.include.members([\"GET\", \"POST\", \"PUT\", \"DELETE\"]);\r",
+									"});\r",
+									"\r",
+									"//used params - query and path\r",
+									"pm.test(\"Used query and path parameters\", () => {\r",
+									"    //first folder should have query\r",
+									"    let queryArr = requestArr.filter(value => value.request.url.query).map(value => value.request.url.query);\r",
+									"    console.log(queryArr);\r",
+									"    pm.expect(queryArr).to.have.length.of.above(0);\r",
+									"    //first folder should also have path\r",
+									"    let pathArr = requestArr.filter(value => value.request.url.path).map(value => value.request.url.path);\r",
+									"    var pathParams = pathArr.flat().filter(p => p.startsWith(':')); \r",
+									"    console.log(pathParams);\r",
+									"    pm.expect(pathParams).to.have.length.of.above(0);\r",
+									"});\r",
+									"\r",
+									"//sent body\r",
+									"pm.test(\"Sent body data\", () => {\r",
+									"    //first folder should have a body\r",
+									"    let bodyArr = requestArr.filter(value => value.request.body).map(value => value.request.body); \r",
+									"    console.log(bodyArr);\r",
+									"    pm.expect(bodyArr).to.have.length.of.above(0);\r",
+									"});\r",
+									"\r",
+									"//used vars\r",
+									"pm.test(\"Used variables\", () => {\r",
+									"    //should be a var reference in query param for mock folder\r",
+									"    let varsArr = mockArr.filter(value => value.request.url.query).map(value => value.request.url.query);\r",
+									"    let queries = varsArr.flat().filter(value => value.value).map(value => value.value);\r",
+									"    var queryVars = queries.filter(p => encodeURI(p).indexOf('%7B%7B')>-1); \r",
+									"    console.log(queryVars);\r",
+									"    pm.expect(queryVars).to.have.length.of.above(0);\r",
+									"    //base path for main folder should also use var\r",
+									"    //url is object when path or query param, string otherwise\r",
+									"    let addresses = requestArr.filter(value => value.request.url.raw ? value.request.url.raw : value.request.url).map(value => value.request.url.raw ? value.request.url.raw : value.request.url);\r",
+									"    var addressVars = addresses.filter(p => encodeURI(p).indexOf('%7B%7B')>-1); \r",
+									"    console.log(addressVars);\r",
+									"    pm.expect(addressVars).to.have.length.of.above(0);\r",
+									"    //auth should also use var\r",
+									"    pm.expect(encodeURI(authObj.apikey.value).indexOf('%7B%7B')).to.be.above(-1);\r",
+									"\r",
+									"});\r",
+									"\r",
+									"//assed description\r",
+									"pm.test(\"Added request description\", () => {\r",
+									"    //second folder should have a description\r",
+									"    let descArr = mockArr.filter(value => value.request.description).map(value => value.request.description);\r",
+									"    console.log(descArr);\r",
+									"    pm.expect(descArr).to.have.length.of.above(0);\r",
+									"});\r",
+									"\r",
+									"//set var from script and next request - make it env var so we check that too\r",
+									"pm.test(\"Set env variable from script and set next request\", () => {\r",
+									"    //second folder should have set var and next req\r",
+									"    let testsArr = mockArr.filter(value => value.event).map(value => value.event); \r",
+									"    console.log(testsArr);\r",
+									"    let execArr = testsArr.flat().filter(value => value.script.exec).map(value => value.script.exec); \r",
+									"    var setsVars = execArr.flat().filter(p => p.indexOf('environment.set(')>-1); \r",
+									"    console.log(setsVars);\r",
+									"    pm.expect(setsVars).to.have.length.of.above(0);\r",
+									"    var setsReqs = execArr.flat().filter(p => p.indexOf('.setNextRequest')>-1); \r",
+									"    console.log(setsReqs);\r",
+									"    pm.expect(setsReqs).to.have.length.of.above(0);\r",
+									"});\r",
+									"//add skill check test\r",
+									"pm.test('Skills checked', () =>{\r",
+									"    var vars = pm.response.json().variable.map(value => value.key);\r",
+									"    pm.expect(vars).to.include('skilled');\r",
+									"});\r",
+									"//check pulled response property\r",
+									"pm.test('Skill check code retrieving set var value from response property', () => {\r",
+									"    //need to make sure set var from response json in skill check request - third folder\r",
+									"        //need to make sure set var from response json in skill check request - third folder\r",
+									"    let scr = JSON.stringify(checksArr[0].event[0].script);\r",
+									"    let resParse = scr.indexOf('pm.response.json')>-1 || scr.indexOf('.rand')>-1;\r",
+									"    pm.expect(resParse).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//if(pm.response.json().data.played<750) postman.setNextRequest('Get all players');"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.postman.com/collections/25428510-1ab1176c-163d-4846-b15f-62626d89a03a?access_key=PMAT-01GQAHG10AMEA3RK9JTJMYED7D",
+							"protocol": "https",
+							"host": [
+								"api",
+								"postman",
+								"com"
+							],
+							"path": [
+								"collections",
+								"25428510-1ab1176c-163d-4846-b15f-62626d89a03a"
+							],
+							"query": [
+								{
+									"key": "access_key",
+									"value": "PMAT-01GQAHG10AMEA3RK9JTJMYED7D"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "{{email_key}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "match_key",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "mock_url",
+			"value": "postman-student-expert.glitch.me"
+		},
+		{
+			"key": "training_api",
+			"value": "postman-student-expert.glitch.me"
+		},
+		{
+			"key": "email_key",
+			"value": "francisco.gorgonho@gmail.com",
+			"type": "string"
+		},
+		{
+			"key": "link",
+			"value": "https://api.postman.com/collections/25428510-82cd9616-5bcb-404a-846d-831aa656722f"
+		},
+		{
+			"key": "userId",
+			"value": "1"
+		},
+		{
+			"key": "responseData",
+			"value": "{{responseData}}"
+		},
+		{
+			"key": "{{auth_key}}",
+			"value": "loads"
+		}
+	]
+}
